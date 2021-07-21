@@ -64,3 +64,44 @@ const galleryItems = [
     description: 'Lighthouse Coast Sea',
   },
 ];
+
+const galleryEl = document.querySelector('.js-gallery');
+const backdropEl = document.querySelector('.js-lightbox');
+const closeBackdropBtnEl = document.querySelector('[data-action="close-lightbox"]');
+const ImageOnBackdrop = document.querySelector('.lightbox__image');
+
+
+const createGalleryMarkup = galleryItems.map(({ preview, original, description }) => createGalleryItemMarkup({ preview, original, description })).join('')
+galleryEl.innerHTML = createGalleryMarkup;
+
+
+galleryEl.addEventListener('click', (e) => {
+  toggleBackdrop();
+  getOriginSource(e)
+});
+
+closeBackdropBtnEl.addEventListener('click', () => {
+  toggleBackdrop();
+  removeOriginSource();
+});
+  
+
+function createGalleryItemMarkup({ preview, original, description}) {
+  return `<li class="gallery-item">
+            <a class="gallery__link">
+              <img class="gallery__image" src="${preview}" data-source="${original}" alt="${description}">
+            </a>
+          </li>`;
+}
+
+function toggleBackdrop() {
+  backdropEl.classList.toggle('is-open');
+}
+
+function getOriginSource(e) {
+  ImageOnBackdrop.src = e.target.dataset.source;
+}
+
+function removeOriginSource() {
+  ImageOnBackdrop.src = '';
+}
