@@ -65,10 +65,12 @@ const galleryItems = [
   },
 ];
 
+const bodyEl = document.body;
 const galleryEl = document.querySelector('.js-gallery');
 const backdropEl = document.querySelector('.js-lightbox');
 const closeBackdropBtnEl = document.querySelector('[data-action="close-lightbox"]');
-const ImageOnBackdrop = document.querySelector('.lightbox__image');
+const overlayEl = document.querySelector('.lightbox__overlay');
+const imageOnBackdrop = document.querySelector('.lightbox__image');
 
 
 const createGalleryMarkup = galleryItems.map(({ preview, original, description }) => createGalleryItemMarkup({ preview, original, description })).join('')
@@ -76,32 +78,100 @@ galleryEl.innerHTML = createGalleryMarkup;
 
 
 galleryEl.addEventListener('click', (e) => {
+  if (e.target.nodeName !== 'IMG') {
+    return
+  }
   toggleBackdrop();
-  getOriginSource(e)
+  getOriginSource(e);
+  blockScroll();
 });
 
 closeBackdropBtnEl.addEventListener('click', () => {
   toggleBackdrop();
   removeOriginSource();
+  allowScroll();
 });
-  
+
+overlayEl.addEventListener('click', () => {
+  toggleBackdrop();
+  allowScroll();
+});
+
+window.addEventListener('keydown', (e) => {
+  closesBackdrop(e);
+  allowScroll();
+});
+
+window.addEventListener('keydown', scrollLeft);
+
+window.addEventListener('keydown', scrollRight);
+
 
 function createGalleryItemMarkup({ preview, original, description}) {
   return `<li class="gallery-item">
             <a class="gallery__link">
-              <img class="gallery__image" src="${preview}" data-source="${original}" alt="${description}">
+              <img class="gallery__image"
+                   src="${preview}"
+                   data-source="${original}" 
+                   alt="${description}">
             </a>
           </li>`;
+}
+
+
+function blockScroll() {
+  bodyEl.classList.add('hidden');
+}
+
+function allowScroll() {
+  bodyEl.classList.remove('hidden');
 }
 
 function toggleBackdrop() {
   backdropEl.classList.toggle('is-open');
 }
 
+function closesBackdrop(e) {
+  if (e.key !== 'Escape') {
+    return
+  }
+  backdropEl.classList.remove('is-open');
+  removeOriginSource();
+}
+
 function getOriginSource(e) {
-  ImageOnBackdrop.src = e.target.dataset.source;
+  imageOnBackdrop.src = e.target.dataset.source;
 }
 
 function removeOriginSource() {
-  ImageOnBackdrop.src = '';
+  imageOnBackdrop.src = '';
+}
+
+
+function scrollLeft(e) {
+  if (backdropEl.classList.contains('is-open') && e.key === 'ArrowLeft') {
+    for (let i = 0; i < galleryItems.length; i += 1) {
+      let image = galleryItems[i];
+      if (image.original === imageOnBackdrop.src) {
+        if (!galleryItems[i - 1]) {
+          return
+        }
+        return imageOnBackdrop.src = galleryItems[i - 1].original;
+      }
+    }
+  } 
+}
+
+function scrollRight(e) {
+  if (backdropEl.classList.contains('is-open') && e.key === 'ArrowRight') {
+    for (let i = 0; i < galleryItems.length; i += 1) {
+      let image = galleryItems[i];
+      if (image.original === imageOnBackdrop.src) {
+        if (!galleryItems[(i + 1)]) {
+          return
+        }
+        return imageOnBackdrop.src = galleryItems[(i + 1)].original;
+      }
+    }
+  }
 }

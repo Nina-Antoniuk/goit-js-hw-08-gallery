@@ -25,6 +25,10 @@ body {
   color: #212121;
 }
 
+.hidden {
+  overflow: hidden;
+}
+
 .gallery {
   display: grid;
   width: 1200px;
