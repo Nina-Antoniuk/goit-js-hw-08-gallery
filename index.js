@@ -65,7 +65,7 @@ const galleryItems = [
   },
 ];
 
-const bodyEl = document.body;
+
 const galleryEl = document.querySelector('.js-gallery');
 const backdropEl = document.querySelector('.js-lightbox');
 const closeBackdropBtnEl = document.querySelector('[data-action="close-lightbox"]');
