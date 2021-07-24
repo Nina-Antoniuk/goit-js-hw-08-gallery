@@ -65,7 +65,7 @@ const galleryItems = [
   },
 ];
 
-
+const bodyEl = document.body;
 const galleryEl = document.querySelector('.js-gallery');
 const backdropEl = document.querySelector('.js-lightbox');
 const closeBackdropBtnEl = document.querySelector('[data-action="close-lightbox"]');
@@ -80,16 +80,6 @@ galleryEl.innerHTML = createGalleryMarkup;
 
 galleryEl.addEventListener('click', opensModal);
 
-closeBackdropBtnEl.addEventListener('click', closesModal);
-
-overlayEl.addEventListener('click', closesModal);
-
-window.addEventListener('keydown', closesModalByEscape);
-
-window.addEventListener('keydown', scrollLeft);
-
-window.addEventListener('keydown', scrollRight);
-
 
 function createGalleryItemMarkup({ preview, original, description }, index) {
   return `<li class="gallery-item">
@@ -103,6 +93,7 @@ function createGalleryItemMarkup({ preview, original, description }, index) {
           </li>`;
 }
 
+let currentIndex = '';
 
 function opensModal(e) {
   if (e.target.nodeName !== 'IMG') {
@@ -111,12 +102,28 @@ function opensModal(e) {
   toggleBackdrop();
   getOrigin(e);
   blockScroll();
+
+  currentIndex = imageOnBackdrop.dataset.index;  // add
+  getsCurrentIndex();  // add
+
+  closeBackdropBtnEl.addEventListener('click', closesModal);
+  overlayEl.addEventListener('click', closesModal);
+  bodyEl.addEventListener('keydown', closesModalByEscape);
+  bodyEl.addEventListener('keydown', scrollLeft);
+  bodyEl.addEventListener('keydown', scrollRight);
 }
+
 
 function closesModal() {
   toggleBackdrop();
   removeOriginSource();
   allowScroll();
+
+  closeBackdropBtnEl.removeEventListener('click', closesModal);
+  overlayEl.removeEventListener('click', closesModal);
+  bodyEl.removeEventListener('keydown', closesModalByEscape);
+  bodyEl.removeEventListener('keydown', scrollLeft);
+  bodyEl.removeEventListener('keydown', scrollRight);
 }
 
 function closesModalByEscape(e) {
@@ -151,15 +158,24 @@ function removeOriginSource() {
 }
 
 
+function getsCurrentIndex() {
+  return currentIndex;
+}
+ 
+// let currentIndex = imageOnBackdrop.dataset.index;
+// console.log(currentIndex); //undefined
+
 function scrollLeft(e) {
-  let currentIndex = imageOnBackdrop.dataset.index;
-  console.log(currentIndex);
+  // console.log('in scroll left', currentIndex); //undefined
+  // currentIndex -= 1;
+  // console.log(currentIndex); // NaN
+
   if (backdropEl.classList.contains('is-open') && e.key === 'ArrowLeft') {
-    if (!galleryItems[currentIndex - 1]) {
+    if (!galleryItems[currentIndex-1]) {
       return
     }
     imageOnBackdrop.src = galleryItems[currentIndex - 1].original;
-  }
+  }  
 }
 
 function scrollRight(e) {
