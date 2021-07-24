@@ -76,10 +76,9 @@ const imageOnBackdrop = document.querySelector('.lightbox__image');
 const createGalleryMarkup = galleryItems.map(({ preview, original, description }, index) => createGalleryItemMarkup({ preview, original, description }, index)).join('')
 galleryEl.innerHTML = createGalleryMarkup;
 
-
-
 galleryEl.addEventListener('click', opensModal);
 
+let currentIndex = '';
 
 function createGalleryItemMarkup({ preview, original, description }, index) {
   return `<li class="gallery-item">
@@ -93,8 +92,6 @@ function createGalleryItemMarkup({ preview, original, description }, index) {
           </li>`;
 }
 
-let currentIndex = '';
-
 function opensModal(e) {
   if (e.target.nodeName !== 'IMG') {
     return
@@ -102,9 +99,7 @@ function opensModal(e) {
   toggleBackdrop();
   getOrigin(e);
   blockScroll();
-
-  currentIndex = imageOnBackdrop.dataset.index;  // add
-  getsCurrentIndex();  // add
+  getsCurrentIndex(imageOnBackdrop.dataset.index);
 
   closeBackdropBtnEl.addEventListener('click', closesModal);
   overlayEl.addEventListener('click', closesModal);
@@ -112,7 +107,6 @@ function opensModal(e) {
   bodyEl.addEventListener('keydown', scrollLeft);
   bodyEl.addEventListener('keydown', scrollRight);
 }
-
 
 function closesModal() {
   toggleBackdrop();
@@ -158,36 +152,27 @@ function removeOriginSource() {
 }
 
 
-function getsCurrentIndex() {
-  return currentIndex;
+function getsCurrentIndex(index) {
+  return currentIndex = index;
 }
  
-// let currentIndex = imageOnBackdrop.dataset.index;
-// console.log(currentIndex); //undefined
 
 function scrollLeft(e) {
-  // console.log('in scroll left', currentIndex); //undefined
-  // currentIndex -= 1;
-  // console.log(currentIndex); // NaN
-
   if (backdropEl.classList.contains('is-open') && e.key === 'ArrowLeft') {
     if (!galleryItems[currentIndex-1]) {
       return
     }
     imageOnBackdrop.src = galleryItems[currentIndex - 1].original;
+    currentIndex -= 1;
   }  
 }
 
 function scrollRight(e) {
   if (backdropEl.classList.contains('is-open') && e.key === 'ArrowRight') {
-    for (let i = 0; i < galleryItems.length; i += 1) {
-      let image = galleryItems[i];
-      if (image.original === imageOnBackdrop.src) {
-        if (!galleryItems[(i + 1)]) {
-          return
-        }
-        return imageOnBackdrop.src = galleryItems[(i + 1)].original;
-      }
+    if (!galleryItems[Number(currentIndex) + 1]) {
+      return
     }
-  }
+    imageOnBackdrop.src = galleryItems[Number(currentIndex) + 1].original;
+    currentIndex = Number(currentIndex) + 1;
+  } 
 }
