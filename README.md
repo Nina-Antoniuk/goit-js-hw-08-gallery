@@ -1,4 +1,6 @@
 # Homework 8
+Тема: event bubbling, Chatty events. Intersection Observer
+
 Завдання виконано відповідно до ТЗ https://github.com/goitacademy/javascript-homework/tree/main/homework-08
 
 Технології:
